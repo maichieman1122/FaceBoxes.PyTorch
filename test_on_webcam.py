@@ -91,6 +91,7 @@ if __name__ == '__main__':
         frame = cv2.flip( frame, 1)
         img = np.float32(frame)
         im_height, im_width, _ = img.shape
+        scale = torch.Tensor([img.shape[1], img.shape[0], img.shape[1], img.shape[0]])
         img -= (104, 117, 123)
         img = img.transpose(2, 0, 1)
         img = torch.from_numpy(img).unsqueeze(0)
@@ -103,6 +104,7 @@ if __name__ == '__main__':
         prior_data = priors.data
         
         boxes = decode(loc.data.squeeze(0), prior_data, cfg['variance'])
+        boxes = boxes * scale / 1.
         boxes = boxes.cpu().numpy()
         scores = conf.squeeze(0).data.cpu().numpy()[:, 1]
         
